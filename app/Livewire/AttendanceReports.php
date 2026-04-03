@@ -154,8 +154,96 @@ class AttendanceReports extends Component
 
     public function exportReport()
     {
-        // This would implement CSV/PDF export functionality
-        session()->flash('message', 'Export functionality will be implemented soon!');
+        try {
+            $teacher = Auth::guard('teacher')->user();
+            
+            // Get report data based on current filters
+            $reportData = $this->generateReport();
+            
+            if (empty($reportData)) {
+                $this->dispatch('notify', ['message' => 'No data available to export', 'type' => 'error']);
+                return;
+            }
+            
+            // Prepare CSV data based on report type
+            $csvLines = [];
+            $filename = '';
+            
+            switch ($this->reportType) {
+                case 'summary':
+                    if (isset($reportData['summary'])) {
+                        $csvLines[] = 'Report Type,Date Range,Total Records,Unique Students,Present,Absent,Late,Excused';
+                        foreach ($reportData['summary'] as $row) {
+                            $csvLines[] = implode(',', [
+                                'Summary Report',
+                                $reportData['date_range']['start'] . ' to ' . $reportData['date_range']['end'],
+                                $reportData['total_records'],
+                                $reportData['unique_students'],
+                                $row['present'] ?? 0,
+                                $row['absent'] ?? 0,
+                                $row['late'] ?? 0,
+                                $row['excused'] ?? 0
+                            ]);
+                        }
+                    }
+                    $dateStr = date('Y-m-d', strtotime($this->startDate));
+                    $filename = "attendance_summary_{$dateStr}.csv";
+                    break;
+                    
+                case 'detailed':
+                    if (isset($reportData['data'])) {
+                        $csvLines[] = 'Student ID,First Name,Last Name,Date,Status,Check In,Check Out,Notes';
+                        foreach ($reportData['data'] as $record) {
+                            $csvLines[] = implode(',', [
+                                $record->student_id ?? '',
+                                $record->student->first_name ?? '',
+                                $record->student->last_name ?? '',
+                                $record->attendance_date ?? '',
+                                $record->status ?? '',
+                                $record->check_in_time ?? '',
+                                $record->check_out_time ?? '',
+                                $record->notes ?? ''
+                            ]);
+                        }
+                    }
+                    $dateStr = date('Y-m-d', strtotime($this->startDate));
+                    $filename = "attendance_detailed_{$dateStr}.csv";
+                    break;
+                    
+                case 'analytics':
+                    if (isset($reportData['daily_trends'])) {
+                        $csvLines[] = 'Date,Present,Absent,Late,Excused';
+                        foreach ($reportData['daily_trends'] as $trend) {
+                            $csvLines[] = implode(',', [
+                                $trend['date'],
+                                $trend['present'] ?? 0,
+                                $trend['absent'] ?? 0,
+                                $trend['late'] ?? 0,
+                                $trend['excused'] ?? 0
+                            ]);
+                        }
+                    }
+                    $dateStr = date('Y-m-d', strtotime($this->startDate));
+                    $filename = "attendance_analytics_{$dateStr}.csv";
+                    break;
+                    
+                default:
+                    $this->dispatch('notify', ['message' => 'Invalid report type selected', 'type' => 'error']);
+                    return;
+            }
+            
+            // Create CSV content
+            $csvContent = implode("\n", $csvLines);
+            
+            // Store CSV in session for download
+            session(['export_data' => $csvContent, 'export_filename' => $filename]);
+            
+            // Redirect to download route
+            return redirect()->route('teacher.download.export');
+                
+        } catch (\Exception $e) {
+            $this->dispatch('notify', ['message' => 'Export failed: ' . $e->getMessage(), 'type' => 'error']);
+        }
     }
 
     public function getAttendanceRate($studentId)

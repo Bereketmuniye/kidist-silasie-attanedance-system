@@ -14,23 +14,17 @@ class StudentManagement extends Component
 {
     use WithPagination;
 
-    public $first_name;
-    public $last_name;
-    public $email;
-    public $phone;
-    public $student_id;
-    public $grade;
-    public $section;
-    public $date_of_birth;
+    public $full_name;
+    public $baptismal_name;
+    public $phone_number;
     public $address;
+    public $common_confessor_father;
     public $is_active = true;
 
     public $selectedStudentId = null;  // store ID only, not the model
     public $showModal = false;
     public $isEditing = false;
     public $search = '';
-    public $filterGrade = '';
-    public $filterSection = '';
 
     public function render()
     {
@@ -38,29 +32,16 @@ class StudentManagement extends Component
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('first_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%')
-                  ->orWhere('student_id', 'like', '%' . $this->search . '%');
+                $q->where('full_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('baptismal_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('phone_number', 'like', '%' . $this->search . '%')
+                  ->orWhere('common_confessor_father', 'like', '%' . $this->search . '%');
             });
         }
 
-        if ($this->filterGrade) {
-            $query->where('grade', $this->filterGrade);
-        }
+        $students = $query->orderBy('full_name')->paginate(15);
 
-        if ($this->filterSection) {
-            $query->where('section', $this->filterSection);
-        }
-
-        $students = $query->orderBy('last_name')
-            ->orderBy('first_name')
-            ->paginate(15);
-
-        $grades   = Student::distinct()->pluck('grade')->filter()->sort();
-        $sections = Student::distinct()->pluck('section')->filter()->sort();
-
-        return view('livewire.student-management', compact('students', 'grades', 'sections'));
+        return view('livewire.student-management', compact('students'));
     }
 
     public function createStudent()
@@ -75,20 +56,14 @@ class StudentManagement extends Component
         $student = Student::findOrFail($id);
 
         $this->selectedStudentId = $id;
-        $this->first_name        = $student->first_name;
-        $this->last_name         = $student->last_name;
-        $this->email             = $student->email;
-        $this->phone             = $student->phone;
-        $this->student_id        = $student->student_id;
-        $this->grade             = $student->grade;
-        $this->section           = $student->section;
-        $this->date_of_birth     = $student->date_of_birth
-            ? Carbon::parse($student->date_of_birth)->format('Y-m-d')
-            : null;
-        $this->address           = $student->address;
-        $this->is_active         = (bool) $student->is_active;
-        $this->isEditing         = true;
-        $this->showModal         = true;
+        $this->full_name = $student->full_name;
+        $this->baptismal_name = $student->baptismal_name;
+        $this->phone_number = $student->phone_number;
+        $this->address = $student->address;
+        $this->common_confessor_father = $student->common_confessor_father;
+        $this->is_active = (bool) $student->is_active;
+        $this->isEditing = true;
+        $this->showModal = true;
     }
 
     public function saveStudent()
@@ -97,29 +72,21 @@ class StudentManagement extends Component
         $ignoreId = $this->isEditing ? ',' . $this->selectedStudentId : '';
 
         $this->validate([
-            'first_name'    => 'required|string|max:255',
-            'last_name'     => 'required|string|max:255',
-            'email'         => 'required|email|unique:students,email' . $ignoreId,
-            'phone'         => 'nullable|string|max:20',
-            'student_id'    => 'required|string|unique:students,student_id' . $ignoreId,
-            'grade'         => 'nullable|string|max:50',
-            'section'       => 'nullable|string|max:50',
-            'date_of_birth' => 'nullable|date',
-            'address'       => 'nullable|string|max:500',
-            'is_active'     => 'boolean',
+            'full_name' => 'required|string|max:255',
+            'baptismal_name' => 'nullable|string|max:255',
+            'phone_number' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'common_confessor_father' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
         ]);
 
         $data = [
-            'first_name'    => $this->first_name,
-            'last_name'     => $this->last_name,
-            'email'         => $this->email,
-            'phone'         => $this->phone,
-            'student_id'    => $this->student_id,
-            'grade'         => $this->grade,
-            'section'       => $this->section,
-            'date_of_birth' => $this->date_of_birth ?: null,
-            'address'       => $this->address,
-            'is_active'     => $this->is_active,
+            'full_name' => $this->full_name,
+            'baptismal_name' => $this->baptismal_name,
+            'phone_number' => $this->phone_number,
+            'address' => $this->address,
+            'common_confessor_father' => $this->common_confessor_father,
+            'is_active' => $this->is_active,
         ];
 
         if ($this->isEditing) {
@@ -151,9 +118,8 @@ class StudentManagement extends Component
     private function resetFields()
     {
         $this->reset([
-            'first_name', 'last_name', 'email', 'phone', 'student_id',
-            'grade', 'section', 'date_of_birth', 'address',
-            'selectedStudentId', 'isEditing',
+            'full_name', 'baptismal_name', 'phone_number', 'address',
+            'common_confessor_father', 'selectedStudentId', 'isEditing',
         ]);
         $this->is_active = true; // keep default as active for new students
     }

@@ -3,100 +3,81 @@
 <div>
 
 {{-- Page Header --}}
-<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div class="mb-4 flex flex-col gap-3">
     <div>
-        <h1 class="text-2xl font-bold text-gray-900">Student Management</h1>
-        <p class="mt-1 text-sm text-gray-500">Add, edit and manage student records.</p>
+        <h1 class="text-xl font-bold text-gray-900">Student Management</h1>
+        <p class="mt-1 text-xs text-gray-500">Add, edit and manage student records.</p>
     </div>
     <button wire:click="createStudent" type="button"
-            class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-700 transition-all hover:-translate-y-0.5">
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-700 transition-all">
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         Add Student
     </button>
 </div>
 
 {{-- Filters --}}
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
+<div class="mb-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
     <div class="relative">
         <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input type="text" wire:model.live="search" placeholder="Search name, email, ID..."
-               class="w-full rounded-xl border border-gray-200 bg-gray-50 pl-9 pr-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+        <input type="text" wire:model.live="search" placeholder="Search name, baptismal name, phone number..."
+               class="w-full rounded-lg border border-gray-200 bg-gray-50 pl-9 pr-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
     </div>
-    <select wire:model.live="filterGrade"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-        <option value="">All Grades</option>
-        @foreach($grades as $grade)
-            <option value="{{ $grade }}">{{ $grade }}</option>
-        @endforeach
-    </select>
-    <select wire:model.live="filterSection"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-        <option value="">All Sections</option>
-        @foreach($sections as $section)
-            <option value="{{ $section }}">{{ $section }}</option>
-        @endforeach
-    </select>
 </div>
 
 {{-- Students Table --}}
-<div class="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
+<div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
     @if($students->count() > 0)
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100 text-sm">
+            <table class="min-w-full divide-y divide-gray-100 text-xs sm:text-sm">
                 <thead>
                     <tr class="bg-gray-50">
-                        <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Student</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Grade / Section</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</th>
-                        <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-5 py-3.5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Student</th>
+                        <th class="hidden sm:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Baptismal Name</th>
+                        <th class="hidden md:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
+                        <th class="hidden lg:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Address</th>
+                        <th class="hidden xl:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Confessor Father</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @foreach($students as $student)
                     <tr class="hover:bg-indigo-50/30 transition-colors">
-                        <td class="px-5 py-3.5 whitespace-nowrap">
-                            <div class="flex items-center gap-3">
-                                <div class="h-9 w-9 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700 border border-indigo-200">
-                                    {{ substr($student->first_name,0,1) }}{{ substr($student->last_name,0,1) }}
+                        <td class="px-3 py-3 whitespace-nowrap">
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <div class="h-6 w-6 sm:h-8 sm:w-8 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] sm:text-xs font-bold text-indigo-700 border border-indigo-200">
+                                    {{ substr($student->full_name,0,1) }}{{ substr($student->full_name, strpos($student->full_name, ' ') + 1, 1) ?? '' }}
                                 </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">{{ $student->full_name }}</p>
-                                    <p class="text-xs text-gray-400">{{ $student->email }}</p>
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-gray-800 text-xs sm:text-sm truncate">{{ $student->full_name }}</p>
+                                    <p class="text-[10px] sm:text-xs text-gray-500 sm:hidden">{{ $student->baptismal_name ?? '—' }}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-3.5 whitespace-nowrap">
-                            <span class="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-600">{{ $student->student_id }}</span>
-                        </td>
-                        <td class="px-5 py-3.5 whitespace-nowrap">
-                            <p class="font-medium text-gray-700">{{ $student->grade ?? '—' }}</p>
-                            <p class="text-xs text-gray-400">{{ $student->section ?? '' }}</p>
-                        </td>
-                        <td class="px-5 py-3.5 whitespace-nowrap text-gray-600">{{ $student->phone ?? '—' }}</td>
-                        <td class="px-5 py-3.5 whitespace-nowrap">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold
+                        <td class="hidden sm:table-cell px-3 py-3 whitespace-nowrap text-gray-600 text-xs sm:text-sm">{{ $student->baptismal_name ?? '—' }}</td>
+                        <td class="hidden md:table-cell px-3 py-3 whitespace-nowrap text-gray-600 text-xs sm:text-sm">{{ $student->phone_number ?? '—' }}</td>
+                        <td class="hidden lg:table-cell px-3 py-3 whitespace-nowrap text-gray-600 text-xs sm:text-sm truncate" title="{{ $student->address ?? '—' }}">{{ Str::limit($student->address ?? '—', 20) }}</td>
+                        <td class="hidden xl:table-cell px-3 py-3 whitespace-nowrap text-gray-600 text-xs sm:text-sm truncate" title="{{ $student->common_confessor_father ?? '—' }}">{{ Str::limit($student->common_confessor_father ?? '—', 15) }}</td>
+                        <td class="px-3 py-3 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold
                                 {{ $student->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
-                                <span class="mr-1.5 h-1.5 w-1.5 rounded-full {{ $student->is_active ? 'bg-emerald-500' : 'bg-red-500' }}"></span>
+                                <span class="mr-1 h-1 w-1 rounded-full {{ $student->is_active ? 'bg-emerald-500' : 'bg-red-500' }}"></span>
                                 {{ $student->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-5 py-3.5 whitespace-nowrap text-right">
-                            <div class="inline-flex items-center gap-1">
+                        <td class="px-3 py-3 whitespace-nowrap text-right">
+                            <div class="flex flex-col sm:flex-row gap-1 sm:gap-1">
                                 <button wire:click="editStudent({{ $student->id }})" type="button"
-                                        class="rounded-lg px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+                                        class="rounded-lg px-2 py-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
                                     Edit
                                 </button>
                                 <button wire:click="toggleStudentStatus({{ $student->id }})" type="button"
-                                        class="rounded-lg px-3 py-1.5 text-xs font-bold {{ $student->is_active ? 'text-amber-700 bg-amber-50 hover:bg-amber-100' : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100' }} transition-colors">
-                                    {{ $student->is_active ? 'Deactivate' : 'Activate' }}
+                                        class="rounded-lg px-2 py-1 text-[10px] font-bold {{ $student->is_active ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' }} transition-colors">
+                                    {{ $student->is_active ? 'Deact' : 'Act' }}
                                 </button>
-                                <button wire:click="deleteStudent({{ $student->id }})"
-                                        wire:confirm="Are you sure you want to delete {{ $student->full_name }}?"
-                                        type="button"
-                                        class="rounded-lg px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
-                                    Delete
+                                <button wire:click="deleteStudent({{ $student->id }})" type="button"
+                                        class="rounded-lg px-2 py-1 text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+                                    Del
                                 </button>
                             </div>
                         </td>
@@ -107,17 +88,17 @@
         </div>
 
         @if($students->hasPages())
-            <div class="border-t border-gray-100 px-5 py-3 bg-gray-50">
+            <div class="border-t border-gray-100 px-3 py-3 bg-gray-50">
                 {{ $students->links() }}
             </div>
         @endif
     @else
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="h-16 w-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-                <svg class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <div class="flex flex-col items-center justify-center py-12 text-center px-4">
+            <div class="h-12 w-12 rounded-xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
+                <svg class="h-6 w-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             </div>
-            <p class="text-base font-bold text-gray-700">No students found</p>
-            <p class="mt-1 text-sm text-gray-400">Try adjusting your filters or add a new student.</p>
+            <p class="text-sm font-bold text-gray-700">No students found</p>
+            <p class="mt-1 text-xs text-gray-400">Try adjusting your search or add a new student.</p>
         </div>
     @endif
 </div>
@@ -126,6 +107,28 @@
      MODAL — single overlay, inside the root div
      ============================================================ --}}
 @if($showModal)
+<div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4" style="background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);">
+
+    {{-- Panel --}}
+    <div class="relative w-full max-w-2xl max-h-[95vh] rounded-xl sm:rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200 overflow-hidden"
+         x-data x-on:click.stop>
+
+        {{-- Modal Header --}}
+        <div class="flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 sm:px-6 sm:py-5">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-white/20">
+                    <svg class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        @if($isEditing)
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        @else
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        @endif
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold text-white">{{ $isEditing ? 'Edit Student' : 'Add New Student' }}</h3>
+                    <p class="text-[10px] sm:text-xs text-indigo-200">{{ $isEditing ? 'Update the student details below.' : 'Fill in the details to add a new student.' }}</p>
+                </div>
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);">
 
     {{-- Panel --}}
@@ -157,87 +160,60 @@
 
         {{-- Modal Body --}}
         <form wire:submit.prevent="saveStudent">
-            <div class="max-h-[70vh] overflow-y-auto p-6">
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div class="max-h-[60vh] sm:max-h-[70vh] overflow-y-auto p-3 sm:p-6">
+                <div class="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2">
 
-                    {{-- First Name --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">First Name <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="first_name" placeholder="e.g. Abebe"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                        @error('first_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    {{-- Full Name --}}
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="full_name" placeholder="e.g. Abebe Kebede"
+                               class="w-full rounded-lg sm:rounded-xl border border-gray-300 bg-white px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                        @error('full_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Last Name --}}
+                    {{-- Baptismal Name --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Last Name <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="last_name" placeholder="e.g. Kebede"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                        @error('last_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">Baptismal Name <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="baptismal_name" placeholder="e.g. Michael"
+                               class="w-full rounded-lg sm:rounded-xl border border-gray-300 bg-white px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                        @error('baptismal_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Email --}}
+                    {{-- Phone Number --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email <span class="text-red-500">*</span></label>
-                        <input type="email" wire:model="email" placeholder="student@school.edu"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                        @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                    </div>
-
-                    {{-- Student ID --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Student ID <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="student_id" placeholder="e.g. STU-001"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                        @error('student_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                    </div>
-
-                    {{-- Phone --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Phone</label>
-                        <input type="text" wire:model="phone" placeholder="+251 9xx xxx xxxx"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
-
-                    {{-- Date of Birth --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Date of Birth</label>
-                        <input type="date" wire:model="date_of_birth"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
-
-                    {{-- Grade --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Grade</label>
-                        <input type="text" wire:model="grade" placeholder="e.g. Grade 8"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
-
-                    {{-- Section --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Section</label>
-                        <input type="text" wire:model="section" placeholder="e.g. A"
-                               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">Phone Number <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="phone_number" placeholder="e.g. +251 911 234 567"
+                               class="w-full rounded-lg sm:rounded-xl border border-gray-300 bg-white px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                        @error('phone_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Address --}}
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Address</label>
-                        <textarea wire:model="address" rows="2" placeholder="Street, City..."
-                                  class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition resize-none"></textarea>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">Address <span class="text-red-500">*</span></label>
+                        <textarea wire:model="address" placeholder="Enter student address"
+                                  class="w-full rounded-lg sm:rounded-xl border border-gray-300 bg-white px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition" rows="3"></textarea>
+                        @error('address') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Common Confessor Father --}}
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">Common Confessor Father <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="common_confessor_father" placeholder="e.g. Father Samuel"
+                               class="w-full rounded-lg sm:rounded-xl border border-gray-300 bg-white px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                        @error('common_confessor_father') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Active checkbox --}}
                     <div class="sm:col-span-2">
-                        <label class="inline-flex items-center gap-3 cursor-pointer select-none group">
+                        <label class="inline-flex items-center gap-2 sm:gap-3 cursor-pointer select-none group">
                             <div class="relative">
                                 <input type="checkbox" wire:model="is_active" class="sr-only peer">
-                                <div class="w-10 h-6 rounded-full bg-gray-200 peer-checked:bg-indigo-600 transition-colors shadow-inner"></div>
-                                <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow peer-checked:translate-x-4 transition-transform"></div>
+                                <div class="w-8 h-5 sm:w-10 sm:h-6 rounded-full bg-gray-200 peer-checked:bg-indigo-600 transition-colors shadow-inner"></div>
+                                <div class="absolute top-0.5 left-0.5 h-4 w-4 sm:h-5 sm:w-5 rounded-full bg-white shadow peer-checked:translate-x-3 sm:peer-checked:translate-x-4 transition-transform"></div>
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-gray-700">Active Student</p>
-                                <p class="text-xs text-gray-400">Inactive students won't appear in attendance lists.</p>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Active Student</p>
+                                <p class="text-[10px] sm:text-xs text-gray-400">Inactive students won't appear in attendance lists.</p>
                             </div>
                         </label>
                     </div>
@@ -246,14 +222,14 @@
             </div>
 
             {{-- Modal Footer --}}
-            <div class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-gray-100 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
                 <button type="button" wire:click="closeModal"
-                        class="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
+                        class="w-full sm:w-auto rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
                     Cancel
                 </button>
                 <button type="submit"
-                        class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-700 transition-all">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-700 transition-all">
+                    <svg class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     {{ $isEditing ? 'Update Student' : 'Add Student' }}
                 </button>
             </div>

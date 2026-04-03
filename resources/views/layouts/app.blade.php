@@ -55,7 +55,7 @@
 </head>
 <body class="font-sans bg-gray-50 text-gray-900 antialiased" x-data="{ sidebarOpen: false }">
 
-<div class="flex h-screen overflow-hidden">
+<div class="flex min-h-screen">
 
     @auth('teacher')
     <!-- ===== SIDEBAR ===== -->
@@ -138,6 +138,22 @@
                 @endif
             </a>
 
+            <a href="{{ route('teacher.classes') }}"
+               class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
+                      {{ request()->routeIs('teacher.classes')
+                         ? 'bg-white/15 text-white shadow-sm'
+                         : 'text-indigo-200 hover:bg-white/8 hover:text-white' }}">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ request()->routeIs('teacher.classes') ? 'bg-indigo-500 shadow-lg shadow-indigo-500/40' : 'bg-white/5 group-hover:bg-white/10' }} transition-all">
+                    <svg class="h-4 w-4 {{ request()->routeIs('teacher.classes') ? 'text-white' : 'text-indigo-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                Classes
+                @if(request()->routeIs('teacher.classes'))
+                    <span class="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+                @endif
+            </a>
+
             <a href="{{ route('teacher.reports') }}"
                class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
                       {{ request()->routeIs('teacher.reports')
@@ -174,7 +190,7 @@
     @endauth
 
     <!-- ===== MAIN AREA ===== -->
-    <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
+    <div class="flex-1">
 
         @auth('teacher')
         <!-- Top Header -->
@@ -216,8 +232,8 @@
         </header>
         @endauth
 
-        <!-- Scrollable page content -->
-        <main class="flex-1 overflow-y-auto bg-gray-50/70">
+        <!-- Page content -->
+        <main class="bg-gray-50/70">
             <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
 
                 @if(session()->has('toaster'))

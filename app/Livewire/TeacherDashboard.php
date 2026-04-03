@@ -44,13 +44,12 @@ class TeacherDashboard extends Component
                 ->where('is_active', true)
                 ->when($this->search, function ($query) {
                     $query->where(function ($q) {
-                        $q->where('students.first_name', 'like', '%' . $this->search . '%')
-                          ->orWhere('students.last_name', 'like', '%' . $this->search . '%')
-                          ->orWhere('students.student_id', 'like', '%' . $this->search . '%');
+                        $q->where('students.full_name', 'like', '%' . $this->search . '%')
+                          ->orWhere('students.baptismal_name', 'like', '%' . $this->search . '%')
+                          ->orWhere('students.phone_number', 'like', '%' . $this->search . '%');
                     });
                 })
-                ->orderBy('last_name')
-                ->orderBy('first_name')
+                ->orderBy('full_name')
                 ->get();
 
             $this->loadAttendanceData($students);
@@ -74,9 +73,6 @@ class TeacherDashboard extends Component
             $attendance = $student->getAttendanceForDate($this->selectedDate);
             $this->attendanceData[$student->id] = [
                 'status' => $attendance ? $attendance->status : 'present',
-                'check_in_time' => $attendance ? $attendance->check_in_time : null,
-                'check_out_time' => $attendance ? $attendance->check_out_time : null,
-                'notes' => $attendance ? $attendance->notes : '',
             ];
         }
     }
@@ -96,9 +92,6 @@ class TeacherDashboard extends Component
                 // Update existing record
                 $attendance->update([
                     'status' => $data['status'],
-                    'check_in_time' => $data['check_in_time'],
-                    'check_out_time' => $data['check_out_time'],
-                    'notes' => $data['notes'],
                 ]);
             } else {
                 // Create new record
@@ -107,15 +100,67 @@ class TeacherDashboard extends Component
                     'attendance_date' => $this->selectedDate,
                     'teacher_id' => $teacher->id,
                     'status' => $data['status'],
-                    'check_in_time' => $data['check_in_time'],
-                    'check_out_time' => $data['check_out_time'],
-                    'notes' => $data['notes'],
                 ]);
             }
         }
 
         $this->dispatch('attendanceUpdated');
         $this->dispatch('notify', ['message' => 'Attendance marked successfully!', 'type' => 'success']);
+    }
+
+    public function exportReport()
+    {
+        try {
+            $teacher = Auth::guard('teacher')->user();
+            
+            // Validate inputs
+            if (!$this->selectedClass || !$this->selectedDate) {
+                $this->dispatch('notify', ['message' => 'Please select a class and date first', 'type' => 'error']);
+                return;
+            }
+            
+            // Get attendance data
+            $class = ClassModel::find($this->selectedClass);
+            $students = $class->students()
+                ->where('is_active', true)
+                ->with(['attendanceRecords' => function($query) use ($teacher) {
+                    $query->where('attendance_date', $this->selectedDate)
+                          ->where('teacher_id', $teacher->id);
+                }])
+                ->orderBy('full_name')
+                ->get();
+            
+            // Prepare CSV data
+            $csvLines = [];
+            $csvLines[] = 'Full Name,Baptismal Name,Phone Number,Status';
+            
+            foreach ($students as $student) {
+                $attendance = $student->attendanceRecords->first();
+                $csvLines[] = implode(',', [
+                    $student->full_name,
+                    $student->baptismal_name,
+                    $student->phone_number,
+                    $attendance ? $attendance->status : 'Not Marked'
+                ]);
+            }
+            
+            // Generate filename
+            $className = preg_replace('/[^a-zA-Z0-9]/', '_', $class->name);
+            $dateStr = date('Y-m-d', strtotime($this->selectedDate));
+            $filename = "attendance_{$className}_{$dateStr}.csv";
+            
+            // Create CSV content
+            $csvContent = implode("\n", $csvLines);
+            
+            // Store CSV in session for download
+            session(['export_data' => $csvContent, 'export_filename' => $filename]);
+            
+            // Redirect to download route
+            return redirect()->route('teacher.download.export');
+            
+        } catch (\Exception $e) {
+            $this->dispatch('notify', ['message' => 'Export failed: ' . $e->getMessage(), 'type' => 'error']);
+        }
     }
 
     public function getStatistics()

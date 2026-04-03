@@ -38,34 +38,83 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Create sample students
+        // Create sample students with Ethiopian names
         $students = [
-            ['Alice', 'Williams', 'S001', '10A'],
-            ['Bob', 'Brown', 'S002', '10A'],
-            ['Charlie', 'Davis', 'S003', '10B'],
-            ['Diana', 'Miller', 'S004', '10B'],
-            ['Edward', 'Wilson', 'S005', '11A'],
-            ['Fiona', 'Moore', 'S006', '11A'],
-            ['George', 'Taylor', 'S007', '11B'],
-            ['Hannah', 'Anderson', 'S008', '11B'],
-            ['Ian', 'Thomas', 'S009', '12A'],
-            ['Julia', 'Jackson', 'S010', '12A'],
+            [
+                'full_name' => 'Abebe Kebede',
+                'baptismal_name' => 'Michael',
+                'phone_number' => '+251 911 234 567',
+                'address' => 'Bole, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Samuel',
+            ],
+            [
+                'full_name' => 'Tigist Haile',
+                'baptismal_name' => 'Hanna',
+                'phone_number' => '+251 922 345 678',
+                'address' => 'Kirkos, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Teklehaimanot',
+            ],
+            [
+                'full_name' => 'Dawit Yohannes',
+                'baptismal_name' => 'Gabriel',
+                'phone_number' => '+251 933 456 789',
+                'address' => 'Mekane Yesus, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Yohannes',
+            ],
+            [
+                'full_name' => 'Marta Tesfaye',
+                'baptismal_name' => 'Mariam',
+                'phone_number' => '+251 944 567 890',
+                'address' => 'Piassa, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Petros',
+            ],
+            [
+                'full_name' => 'Kaleb Mengistu',
+                'baptismal_name' => 'Paulos',
+                'phone_number' => '+251 955 678 901',
+                'address' => 'Kazanchis, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Markos',
+            ],
+            [
+                'full_name' => 'Sena Alemu',
+                'baptismal_name' => 'Elizabeth',
+                'phone_number' => '+251 966 789 012',
+                'address' => 'Saris, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Girma',
+            ],
+            [
+                'full_name' => 'Bekele Tadesse',
+                'baptismal_name' => 'Yohannes',
+                'phone_number' => '+251 977 890 123',
+                'address' => 'CMC, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Berhanu',
+            ],
+            [
+                'full_name' => 'Almaz Wondimu',
+                'baptismal_name' => 'Sofia',
+                'phone_number' => '+251 988 901 234',
+                'address' => 'Megenagna, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Tewodros',
+            ],
+            [
+                'full_name' => 'Solomon Tadesse',
+                'baptismal_name' => 'David',
+                'phone_number' => '+251 999 012 345',
+                'address' => 'Hayahulet, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Melaku',
+            ],
+            [
+                'full_name' => 'Hanna Getachew',
+                'baptismal_name' => 'Ruth',
+                'phone_number' => '+251 910 123 456',
+                'address' => 'Lideta, Addis Ababa, Ethiopia',
+                'common_confessor_father' => 'Father Habte',
+            ],
         ];
 
         $createdStudents = [];
-        foreach ($students as [$firstName, $lastName, $studentId, $grade]) {
-            $student = Student::create([
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'email' => strtolower($firstName . '.' . $lastName) . '@student.school.edu',
-                'phone' => '+1-555-' . str_pad(substr($studentId, 1), 4, '0', STR_PAD_LEFT),
-                'student_id' => $studentId,
-                'grade' => substr($grade, 0, 2),
-                'section' => substr($grade, 2),
-                'date_of_birth' => now()->subYears(rand(15, 18))->format('Y-m-d'),
-                'address' => rand(100, 999) . ' School Street, Education City',
-                'is_active' => true,
-            ]);
+        foreach ($students as $studentData) {
+            $student = Student::create(array_merge($studentData, ['is_active' => true]));
             $createdStudents[] = $student;
         }
 

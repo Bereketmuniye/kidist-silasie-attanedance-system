@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TeacherLoginController;
 use App\Http\Controllers\Auth\TeacherRegisterController;
+use App\Http\Controllers\ExportController;
 use App\Livewire\TeacherDashboard;
 use App\Livewire\StudentManagement;
+use App\Livewire\ClassManagement;
 use App\Livewire\AttendanceReports;
 
 // Guest routes
@@ -30,5 +32,7 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
 Route::middleware('auth:teacher')->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/dashboard', TeacherDashboard::class)->name('dashboard');
     Route::get('/students', StudentManagement::class)->name('students');
+    Route::get('/classes', ClassManagement::class)->name('classes');
     Route::get('/reports', AttendanceReports::class)->name('reports');
+    Route::get('/download/export', [ExportController::class, 'downloadExport'])->name('download.export');
 });

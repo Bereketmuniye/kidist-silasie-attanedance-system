@@ -50,8 +50,28 @@
                                 </div>
                                 <div class="min-w-0">
                                     <p class="font-semibold text-gray-800 text-xs sm:text-sm truncate">{{ $student->full_name }}</p>
-                                    <p class="text-[10px] sm:text-xs text-gray-500 sm:hidden">{{ $student->baptismal_name ?? '—' }}</p>
-                                    <p class="text-[10px] sm:text-xs text-gray-500 sm:hidden">{{ $student->phone_number ?? '—' }}</p>
+                                    <div class="sm:hidden space-y-1 mt-1">
+                                        @if($student->baptismal_name)
+                                            <p class="text-[10px] text-gray-500">
+                                                <span class="font-medium">የክርስትና:</span> {{ $student->baptismal_name }}
+                                            </p>
+                                        @endif
+                                        @if($student->phone_number)
+                                            <p class="text-[10px] text-gray-500">
+                                                <span class="font-medium">ስልክ:</span> {{ $student->phone_number }}
+                                            </p>
+                                        @endif
+                                        @if($student->address)
+                                            <p class="text-[10px] text-gray-500">
+                                                <span class="font-medium">አድራሻ:</span> {{ Str::limit($student->address, 30) }}
+                                            </p>
+                                        @endif
+                                        @if($student->common_confessor_father)
+                                            <p class="text-[10px] text-gray-500">
+                                                <span class="font-medium">ንስሐ አባት:</span> {{ $student->common_confessor_father }}
+                                            </p>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </td>

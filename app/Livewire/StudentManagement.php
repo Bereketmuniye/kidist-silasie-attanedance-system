@@ -39,7 +39,7 @@ class StudentManagement extends Component
             });
         }
 
-        $students = $query->orderBy('full_name')->paginate(15);
+        $students = $query->orderBy('created_at', 'desc')->paginate(15);
 
         return view('livewire.student-management', compact('students'));
     }

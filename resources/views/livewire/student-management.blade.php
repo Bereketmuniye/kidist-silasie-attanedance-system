@@ -1,17 +1,17 @@
-@section('title', 'Students')
+@section('title', 'የተማማሪዎች አስተዳደር')
 
 <div>
 
 {{-- Page Header --}}
 <div class="mb-4 flex flex-col gap-3">
     <div>
-        <h1 class="text-xl font-bold text-gray-900">Student Management</h1>
-        <p class="mt-1 text-xs text-gray-500">Add, edit and manage student records.</p>
+        <h1 class="text-xl font-bold text-gray-900">የተማሪዎች አስተዳደር</h1>
+        <p class="mt-1 text-xs text-gray-500">የተማሪዎችን መረጃ ይጨምሩ፣ ያስተካክሉ እና ያስተዳዱ።</p>
     </div>
     <button wire:click="createStudent" type="button"
             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-500/30 hover:bg-indigo-700 transition-all">
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-        Add Student
+        ተማሪ ይጨምሩ
     </button>
 </div>
 
@@ -19,7 +19,7 @@
 <div class="mb-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
     <div class="relative">
         <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input type="text" wire:model.live="search" placeholder="Search name, baptismal name, phone number..."
+        <input type="text" wire:model.live="search" placeholder="ስም፣ የክርስትና ስም፣ ስልክ ቁጥር..."
                class="w-full rounded-lg border border-gray-200 bg-gray-50 pl-9 pr-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
     </div>
 </div>
@@ -31,13 +31,13 @@
             <table class="min-w-full divide-y divide-gray-100 text-xs sm:text-sm">
                 <thead>
                     <tr class="bg-gray-50">
-                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Student</th>
-                        <th class="hidden sm:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Baptismal Name</th>
-                        <th class="hidden md:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</th>
-                        <th class="hidden lg:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Address</th>
-                        <th class="hidden xl:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Confessor Father</th>
-                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ተማሪ</th>
+                        <th class="hidden sm:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">የክርስትና ስም</th>
+                        <th class="hidden md:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ስልክ ቁጥር</th>
+                        <th class="hidden lg:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">አድራሻ</th>
+                        <th class="hidden xl:table-cell px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">የጋራ ንስሐ አባት</th>
+                        <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ሁኔታ</th>
+                        <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">ተግባራት</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">

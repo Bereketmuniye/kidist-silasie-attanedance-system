@@ -154,6 +154,38 @@
                 @endif
             </a>
 
+            <a href="{{ route('teacher.exams') }}"
+               class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
+                      {{ request()->routeIs('teacher.exams')
+                         ? 'bg-white/15 text-white shadow-sm'
+                         : 'text-indigo-200 hover:bg-white/8 hover:text-white' }}">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ request()->routeIs('teacher.exams') ? 'bg-indigo-500 shadow-lg shadow-indigo-500/40' : 'bg-white/5 group-hover:bg-white/10' }} transition-all">
+                    <svg class="h-4 w-4 {{ request()->routeIs('teacher.exams') ? 'text-white' : 'text-indigo-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                Exams
+                @if(request()->routeIs('teacher.exams'))
+                    <span class="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+                @endif
+            </a>
+
+            <a href="{{ route('teacher.exam-results') }}"
+               class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
+                      {{ request()->routeIs('teacher.exam-results')
+                         ? 'bg-white/15 text-white shadow-sm'
+                         : 'text-indigo-200 hover:bg-white/8 hover:text-white' }}">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ request()->routeIs('teacher.exam-results') ? 'bg-indigo-500 shadow-lg shadow-indigo-500/40' : 'bg-white/5 group-hover:bg-white/10' }} transition-all">
+                    <svg class="h-4 w-4 {{ request()->routeIs('teacher.exam-results') ? 'text-white' : 'text-indigo-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                Results
+                @if(request()->routeIs('teacher.exam-results'))
+                    <span class="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+                @endif
+            </a>
+
             <a href="{{ route('teacher.reports') }}"
                class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150
                       {{ request()->routeIs('teacher.reports')

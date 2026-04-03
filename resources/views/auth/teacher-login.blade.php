@@ -80,6 +80,9 @@
                     <a href="{{ route('student.register') }}" class="font-medium text-green-600 hover:text-green-500 block">
                         የቅድመ ጋብቻ ትምህርት ለመመዝገብ እዚህ ይጫኑ
                     </a>
+                    <a href="{{ route('exams.list') }}" class="font-medium text-purple-600 hover:text-purple-500 block">
+                        ፈተናዎችን ለመውሰን እዚህ ይጫኑ
+                    </a>
                 </div>
             </form>
         </div>

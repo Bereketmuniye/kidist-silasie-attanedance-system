@@ -236,7 +236,7 @@
         <div class="relative w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden">
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">የተማማሪ ዝርዘርም</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Student Details</h3>
                     <button wire:click="closeDetails" type="button"
                             class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,36 +250,36 @@
                 <!-- Student Info -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-white p-4 rounded-lg border border-gray-200">
-                        <h4 class="text-sm font-medium text-gray-900 mb-3">የተማማሪ መረጃ</h4>
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">Student Information</h4>
                         <div class="space-y-2">
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ሙሉ ስም:</span>
+                                <span class="text-sm text-gray-600">Full Name:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ $selectedResult->student_name }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ስልክ:</span>
+                                <span class="text-sm text-gray-600">Phone:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ $selectedResult->student_phone }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ፈተና:</span>
+                                <span class="text-sm text-gray-600">Exam:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ $selectedResult->exam->title }}</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="bg-white p-4 rounded-lg border border-gray-200">
-                        <h4 class="text-sm font-medium text-gray-900 mb-3">የፈተና መረጃ</h4>
+                        <h4 class="text-sm font-medium text-gray-900 mb-3">Exam Information</h4>
                         <div class="space-y-2">
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ከመጠን:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ $selectedResult->exam->duration_minutes }} ደቂቃ</span>
+                                <span class="text-sm text-gray-600">Duration:</span>
+                                <span class="text-sm font-medium text-gray-900">{{ $selectedResult->exam->duration_minutes }} min</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ጠቅም ጥያቄዎች:</span>
+                                <span class="text-sm text-gray-600">Total Questions:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ $selectedResult->total_questions }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600">ጠቅም ነጥብ:</span>
+                                <span class="text-sm text-gray-600">Total Points:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ $selectedResult->exam->questions->sum('points') }}</span>
                             </div>
                         </div>
@@ -288,40 +288,40 @@
 
                 <!-- Results Summary -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-                    <h4 class="text-sm font-medium text-gray-900 mb-3">ውጤት ማጠል</h4>
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">Results Summary</h4>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-900">{{ $selectedResult->correct_answers }}</div>
-                            <div class="text-xs text-gray-500">የተሳከፉ</div>
+                            <div class="text-xs text-gray-500">Correct</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-900">{{ $selectedResult->total_questions }}</div>
-                            <div class="text-xs text-gray-500">ጠቅም</div>
+                            <div class="text-xs text-gray-500">Total</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold text-gray-900">{{ $selectedResult->score }}</div>
-                            <div class="text-xs text-gray-500">ነጥብ</div>
+                            <div class="text-xs text-gray-500">Score</div>
                         </div>
                         <div class="text-center">
                             <div class="text-2xl font-bold {{ $selectedResult->percentage >= 60 ? 'text-green-600' : 'text-red-600' }}">{{ $selectedResult->percentage }}%</div>
-                            <div class="text-xs text-gray-500">ፐርሰንት</div>
+                            <div class="text-xs text-gray-500">Percentage</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Question Details -->
                 <div class="bg-white p-4 rounded-lg border border-gray-200">
-                    <h4 class="text-sm font-medium text-gray-900 mb-4">የጥያቄዎች ምርዘር</h4>
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Question Details</h4>
                     <div class="space-y-3 max-h-96 overflow-y-auto">
                         @foreach($selectedResult->answers as $index => $answer)
                             <div class="flex items-start justify-between p-3 rounded-lg border {{ $answer->is_correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50' }}">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-sm font-medium text-gray-900">ጥያቄ {{ $index + 1 }}</span>
-                                        <span class="text-xs text-gray-500">{{ $answer->question->points }} ነጥብ</span>
+                                        <span class="text-sm font-medium text-gray-900">Question {{ $index + 1 }}</span>
+                                        <span class="text-xs text-gray-500">{{ $answer->question->points }} points</span>
                                         <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
                                             {{ $answer->is_correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $answer->is_correct ? 'ትክክ' : 'ተሳከቀዎት' }}
+                                            {{ $answer->is_correct ? 'Correct' : 'Incorrect' }}
                                         </span>
                                     </div>
                                     <div class="text-sm text-gray-900 mb-2">{{ $answer->question->question }}</div>
@@ -341,11 +341,11 @@
                                     </div>
                                 </div>
                                 <div class="ml-4 text-sm">
-                                    <div class="text-gray-600">የተማማሪ:</span>
+                                    <div class="text-gray-600">Student:</span>
                                     <div class="font-medium {{ $answer->is_correct ? 'text-green-600' : 'text-red-600' }}">
                                         {{ $answer->selected_answer }}
                                     </div>
-                                    <div class="text-gray-600">እውካይ:</span>
+                                    <div class="text-gray-600">Correct:</span>
                                     <div class="font-medium text-green-600">
                                         {{ $answer->question->correct_answer }}
                                     </div>

@@ -191,6 +191,12 @@
                         </td>
                         <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex flex-col sm:flex-row justify-end gap-2">
+                                @if($result->percentage >= 60)
+                                    <button wire:click="downloadCertificate({{ $result->id }})" type="button"
+                                            class="text-green-600 hover:text-green-900 text-sm">
+                                        Certificate
+                                    </button>
+                                @endif
                                 <button wire:click="viewDetails({{ $result->id }})" type="button"
                                         class="text-indigo-600 hover:text-indigo-900 text-sm">
                                     Details

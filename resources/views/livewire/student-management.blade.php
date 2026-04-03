@@ -51,6 +51,7 @@
                                 <div class="min-w-0">
                                     <p class="font-semibold text-gray-800 text-xs sm:text-sm truncate">{{ $student->full_name }}</p>
                                     <p class="text-[10px] sm:text-xs text-gray-500 sm:hidden">{{ $student->baptismal_name ?? '—' }}</p>
+                                    <p class="text-[10px] sm:text-xs text-gray-500 sm:hidden">{{ $student->phone_number ?? '—' }}</p>
                                 </div>
                             </div>
                         </td>

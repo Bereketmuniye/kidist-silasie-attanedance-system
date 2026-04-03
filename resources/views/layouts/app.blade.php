@@ -73,7 +73,7 @@
 
     <!-- Sidebar panel -->
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-           class="sidebar-gradient fixed inset-y-0 left-0 z-50 flex w-64 flex-col shadow-2xl transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
+           class="sidebar-gradient fixed top-0 left-0 bottom-0 z-50 flex w-64 flex-col shadow-2xl transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:left-auto lg:bottom-auto lg:translate-x-0 lg:h-screen lg:overflow-y-auto">
 
         <!-- Logo -->
         <div class="flex h-16 shrink-0 items-center gap-3 px-5 border-b border-white/10">
@@ -222,7 +222,7 @@
     @endauth
 
     <!-- ===== MAIN AREA ===== -->
-    <div class="flex-1">
+    <div class="flex-1 flex flex-col h-screen lg:h-auto lg:overflow-hidden">
 
         @auth('teacher')
         <!-- Top Header -->
@@ -265,7 +265,7 @@
         @endauth
 
         <!-- Page content -->
-        <main class="bg-gray-50/70">
+        <main class="bg-gray-50/70 flex-1 overflow-y-auto">
             <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
 
                 @if(session()->has('toaster'))

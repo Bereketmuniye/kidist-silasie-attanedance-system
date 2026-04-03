@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TeacherLoginController;
 use App\Http\Controllers\Auth\TeacherRegisterController;
+use App\Http\Controllers\Auth\StudentRegistrationController;
 use App\Http\Controllers\ExportController;
 use App\Livewire\TeacherDashboard;
 use App\Livewire\StudentManagement;
@@ -26,6 +27,13 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
     });
     
     Route::post('logout', [TeacherLoginController::class, 'logout'])->name('logout');
+});
+
+// Student registration routes (public access)
+Route::prefix('student')->name('student.')->group(function () {
+    Route::get('register', [StudentRegistrationController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [StudentRegistrationController::class, 'register'])->name('register.submit');
+    Route::get('register/success', [StudentRegistrationController::class, 'registrationSuccess'])->name('register.success');
 });
 
 // Protected teacher routes

@@ -73,9 +73,12 @@
                     </button>
                 </div>
 
-                <div class="text-center mt-6">
-                    <a href="{{ route('teacher.register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                <div class="text-center mt-6 space-y-3">
+                    <a href="{{ route('teacher.register') }}" class="font-medium text-indigo-600 hover:text-indigo-500 block">
                         Don't have an account? Register here
+                    </a>
+                    <a href="{{ route('student.register') }}" class="font-medium text-green-600 hover:text-green-500 block">
+                        የቅድመ ጋብቻ ትምህርት ለመመዝገብ እዚህ ይጫኑ
                     </a>
                 </div>
             </form>

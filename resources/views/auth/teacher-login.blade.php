@@ -214,10 +214,6 @@
             
             <!-- Footer Links -->
             <div class="mt-8 text-center space-y-3 border-t border-amber-200 pt-6">
-                <a href="{{ route('teacher.register') }}" 
-                   class="block text-amber-800 hover:text-amber-900 font-medium transition-colors">
-                    Don't have an account? Register here
-                </a>
                 <a href="{{ route('student.register') }}" 
                    class="block text-amber-700 hover:text-amber-800 font-medium transition-colors">
                     Student Registration

@@ -1,7 +1,9 @@
+@extends('layouts.app')
+
 @section('title', 'የፈተና አስተዳደር')
 
+@section('content')
 <div>
-
 {{-- Page Header --}}
 <div class="mb-4 flex flex-col gap-3">
     <div>
@@ -375,5 +377,4 @@
         });
     });
 </script>
-
-</div>
+@endsection

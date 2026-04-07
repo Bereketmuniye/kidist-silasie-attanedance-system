@@ -1,6 +1,8 @@
-@section('title', 'Dashboard')
+@extends('layouts.app')
 
-<div>
+@section('title', 'Dashboard Overview')
+
+@section('content')
 <!-- Page Header -->
 <div class="mb-8">
     <h1 class="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
@@ -337,5 +339,5 @@
             </a>
         </div>
     </div>
-</div>
+@endsection
 </div>

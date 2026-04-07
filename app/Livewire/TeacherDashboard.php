@@ -73,6 +73,9 @@ class TeacherDashboard extends Component
             $attendance = $student->getAttendanceForDate($this->selectedDate);
             $this->attendanceData[$student->id] = [
                 'status' => $attendance ? $attendance->status : 'present',
+                'check_in_time' => $attendance ? $attendance->check_in_time : null,
+                'check_out_time' => $attendance ? $attendance->check_out_time : null,
+                'notes' => $attendance ? $attendance->notes : '',
             ];
         }
     }
@@ -92,6 +95,9 @@ class TeacherDashboard extends Component
                 // Update existing record
                 $attendance->update([
                     'status' => $data['status'],
+                    'check_in_time' => $data['check_in_time'],
+                    'check_out_time' => $data['check_out_time'],
+                    'notes' => $data['notes'],
                 ]);
             } else {
                 // Create new record
@@ -100,6 +106,9 @@ class TeacherDashboard extends Component
                     'attendance_date' => $this->selectedDate,
                     'teacher_id' => $teacher->id,
                     'status' => $data['status'],
+                    'check_in_time' => $data['check_in_time'],
+                    'check_out_time' => $data['check_out_time'],
+                    'notes' => $data['notes'],
                 ]);
             }
         }
@@ -132,7 +141,7 @@ class TeacherDashboard extends Component
             
             // Prepare CSV data
             $csvLines = [];
-            $csvLines[] = 'Full Name,Baptismal Name,Phone Number,Status';
+            $csvLines[] = 'Full Name,Baptismal Name,Phone Number,Status,Check In,Check Out,Notes';
             
             foreach ($students as $student) {
                 $attendance = $student->attendanceRecords->first();
@@ -140,7 +149,10 @@ class TeacherDashboard extends Component
                     $student->full_name,
                     $student->baptismal_name,
                     $student->phone_number,
-                    $attendance ? $attendance->status : 'Not Marked'
+                    $attendance ? $attendance->status : 'Not Marked',
+                    $attendance ? ($attendance->check_in_time ?? '') : '',
+                    $attendance ? ($attendance->check_out_time ?? '') : '',
+                    $attendance ? ($attendance->notes ?? '') : ''
                 ]);
             }
             

@@ -1,7 +1,9 @@
-@section('title', 'የተማማሪዎች አስተዳደር')
+@extends('layouts.app')
 
+@section('title', 'የተማሪዎች አስተዳደር')
+
+@section('content')
 <div>
-
 {{-- Page Header --}}
 <div class="mb-4 flex flex-col gap-3">
     <div>
@@ -256,7 +258,5 @@
             </div>
         </form>
     </div>
-</div>
 @endif
-
-</div>
+@endsection

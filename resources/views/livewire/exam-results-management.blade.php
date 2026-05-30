@@ -1,4 +1,3 @@
-@section('title', 'Exam Results Management')
 
 <div>
 

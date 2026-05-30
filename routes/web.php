@@ -12,6 +12,7 @@ use App\Livewire\ExamManagement;
 use App\Livewire\UserExam;
 use App\Livewire\ExamResultsManagement;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StudentController;
 
 // Guest routes
 Route::get('/', function () {
@@ -54,7 +55,7 @@ Route::prefix('exams')->name('exams.')->group(function () {
 // Protected teacher routes
 Route::middleware('auth:teacher')->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/students', StudentManagement::class)->name('students');
+    Route::get('/students', [StudentController::class, 'index'])->name('students');
     Route::get('/classes', ClassManagement::class)->name('classes');
     Route::get('/reports', AttendanceReports::class)->name('reports');
     Route::get('/exams', ExamManagement::class)->name('exams');

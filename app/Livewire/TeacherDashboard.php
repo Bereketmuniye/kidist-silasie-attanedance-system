@@ -3,56 +3,112 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\ClassModel;
-use App\Models\Student;
 use App\Models\AttendanceRecord;
-use App\Services\ToasterService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class TeacherDashboard extends Component
 {
-    use WithPagination;
-
     public $selectedClass = null;
-    public $selectedDate = null;
+    public $selectedDate  = null;
     public $attendanceData = [];
     public $search = '';
-    public $showAttendanceForm = false;
 
     protected $listeners = ['attendanceUpdated' => '$refresh'];
 
     public function mount()
     {
-        $this->selectedDate = now()->format('Y-m-d');
+        $this->selectedDate  = now()->format('Y-m-d');
         $this->attendanceData = [];
     }
+
+    // ── Lifecycle hooks ──────────────────────────────────────────────────────────
+
+    public function updatedSelectedClass()
+    {
+        $this->search = '';
+        $this->attendanceData = [];
+        $this->loadAttendanceForCurrentStudents();
+    }
+
+    public function updatedSelectedDate()
+    {
+        $this->attendanceData = [];
+        $this->loadAttendanceForCurrentStudents();
+    }
+
+    public function updatedSearch()
+    {
+        $this->loadAttendanceForCurrentStudents();
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────────
+
+    private function loadAttendanceForCurrentStudents(): void
+    {
+        if (! $this->selectedClass) {
+            $this->attendanceData = [];
+            return;
+        }
+        $this->loadAttendanceData($this->getFilteredStudents());
+    }
+
+    private function getFilteredStudents(): Collection
+    {
+        $class = ClassModel::find($this->selectedClass);
+        if (! $class) return collect();
+
+        return $class->students()
+            ->where('students.is_active', true)
+            ->when($this->search, fn($q) =>
+                $q->where(fn($q2) =>
+                    $q2->where('students.full_name', 'like', "%{$this->search}%")
+                       ->orWhere('students.baptismal_name', 'like', "%{$this->search}%")
+                       ->orWhere('students.phone_number', 'like', "%{$this->search}%")
+                )
+            )
+            ->orderBy('full_name')
+            ->get();
+    }
+
+    private function loadAttendanceData(Collection $students): void
+    {
+        $data = [];
+        foreach ($students as $student) {
+            $existing = $this->attendanceData[$student->id] ?? null;
+            if ($existing) {
+                $data[$student->id] = $existing;
+                continue;
+            }
+            $record = $student->getAttendanceForDate($this->selectedDate);
+            $data[$student->id] = [
+                'status'         => $record?->status         ?? 'present',
+                'check_in_time'  => $record?->check_in_time  ?? null,
+                'check_out_time' => $record?->check_out_time ?? null,
+                'notes'          => $record?->notes          ?? '',
+            ];
+        }
+        $this->attendanceData = $data;
+    }
+
+    // ── Render ───────────────────────────────────────────────────────────────────
 
     public function render()
     {
         $teacher = Auth::guard('teacher')->user();
-        
+
         $classes = ClassModel::where('teacher_id', $teacher->id)
             ->where('is_active', true)
             ->withCount('students')
             ->get();
 
-        $students = [];
+        $students = collect();
         if ($this->selectedClass) {
-            $class = ClassModel::find($this->selectedClass);
-            $students = $class->students()
-                ->where('is_active', true)
-                ->when($this->search, function ($query) {
-                    $query->where(function ($q) {
-                        $q->where('students.full_name', 'like', '%' . $this->search . '%')
-                          ->orWhere('students.baptismal_name', 'like', '%' . $this->search . '%')
-                          ->orWhere('students.phone_number', 'like', '%' . $this->search . '%');
-                    });
-                })
-                ->orderBy('full_name')
-                ->get();
-
-            $this->loadAttendanceData($students);
+            $students = $this->getFilteredStudents();
+            if (empty($this->attendanceData)) {
+                $this->loadAttendanceData($students);
+            }
         }
 
         $recentAttendance = AttendanceRecord::where('teacher_id', $teacher->id)
@@ -62,136 +118,92 @@ class TeacherDashboard extends Component
             ->limit(10)
             ->get();
 
-        return view('livewire.teacher-dashboard', compact('classes', 'students', 'recentAttendance'));
+        $stats = $this->getStatistics();
+
+        return view('livewire.teacher-dashboard', compact('classes', 'students', 'recentAttendance', 'stats'));
     }
 
-    private function loadAttendanceData($students)
-    {
-        $this->attendanceData = [];
-        
-        foreach ($students as $student) {
-            $attendance = $student->getAttendanceForDate($this->selectedDate);
-            $this->attendanceData[$student->id] = [
-                'status' => $attendance ? $attendance->status : 'present',
-                'check_in_time' => $attendance ? $attendance->check_in_time : null,
-                'check_out_time' => $attendance ? $attendance->check_out_time : null,
-                'notes' => $attendance ? $attendance->notes : '',
-            ];
-        }
-    }
+    // ── Actions ──────────────────────────────────────────────────────────────────
 
     public function markAttendance()
     {
         $teacher = Auth::guard('teacher')->user();
-        
+
         foreach ($this->attendanceData as $studentId => $data) {
-            // First, try to find existing record
-            $attendance = AttendanceRecord::where('student_id', $studentId)
-                ->where('attendance_date', $this->selectedDate)
-                ->where('teacher_id', $teacher->id)
-                ->first();
-            
-            if ($attendance) {
-                // Update existing record
-                $attendance->update([
-                    'status' => $data['status'],
-                    'check_in_time' => $data['check_in_time'],
-                    'check_out_time' => $data['check_out_time'],
-                    'notes' => $data['notes'],
-                ]);
-            } else {
-                // Create new record
-                AttendanceRecord::create([
-                    'student_id' => $studentId,
-                    'attendance_date' => $this->selectedDate,
-                    'teacher_id' => $teacher->id,
-                    'status' => $data['status'],
-                    'check_in_time' => $data['check_in_time'],
-                    'check_out_time' => $data['check_out_time'],
-                    'notes' => $data['notes'],
-                ]);
-            }
+            AttendanceRecord::updateOrCreate(
+                ['student_id' => $studentId, 'attendance_date' => $this->selectedDate, 'teacher_id' => $teacher->id],
+                [
+                    'status'          => $data['status'],
+                    'check_in_time'   => $data['check_in_time']  ?? null,
+                    'check_out_time'  => $data['check_out_time'] ?? null,
+                    'notes'           => $data['notes']          ?? '',
+                ]
+            );
         }
 
         $this->dispatch('attendanceUpdated');
-        $this->dispatch('notify', ['message' => 'Attendance marked successfully!', 'type' => 'success']);
+        $this->dispatch('notify', ['message' => 'Attendance saved successfully!', 'type' => 'success']);
     }
 
     public function exportReport()
     {
+        $teacher = Auth::guard('teacher')->user();
+
+        if (! $this->selectedClass || ! $this->selectedDate) {
+            $this->dispatch('notify', ['message' => 'Please select a class and date first.', 'type' => 'error']);
+            return;
+        }
+
         try {
-            $teacher = Auth::guard('teacher')->user();
-            
-            // Validate inputs
-            if (!$this->selectedClass || !$this->selectedDate) {
-                $this->dispatch('notify', ['message' => 'Please select a class and date first', 'type' => 'error']);
-                return;
-            }
-            
-            // Get attendance data
-            $class = ClassModel::find($this->selectedClass);
+            $class    = ClassModel::find($this->selectedClass);
             $students = $class->students()
-                ->where('is_active', true)
-                ->with(['attendanceRecords' => function($query) use ($teacher) {
-                    $query->where('attendance_date', $this->selectedDate)
-                          ->where('teacher_id', $teacher->id);
-                }])
+                ->where('students.is_active', true)
+                ->with(['attendanceRecords' => fn($q) =>
+                    $q->where('attendance_date', $this->selectedDate)->where('teacher_id', $teacher->id)
+                ])
                 ->orderBy('full_name')
                 ->get();
-            
-            // Prepare CSV data
-            $csvLines = [];
-            $csvLines[] = 'Full Name,Baptismal Name,Phone Number,Status,Check In,Check Out,Notes';
-            
-            foreach ($students as $student) {
-                $attendance = $student->attendanceRecords->first();
-                $csvLines[] = implode(',', [
-                    $student->full_name,
-                    $student->baptismal_name,
-                    $student->phone_number,
-                    $attendance ? $attendance->status : 'Not Marked',
-                    $attendance ? ($attendance->check_in_time ?? '') : '',
-                    $attendance ? ($attendance->check_out_time ?? '') : '',
-                    $attendance ? ($attendance->notes ?? '') : ''
+
+            $rows = ['Full Name,Baptismal Name,Phone Number,Status,Check In,Check Out,Notes'];
+            foreach ($students as $s) {
+                $r = $s->attendanceRecords->first();
+                $rows[] = implode(',', [
+                    '"'.str_replace('"', '""', $s->full_name).'"',
+                    '"'.str_replace('"', '""', $s->baptismal_name ?? '').'"',
+                    $s->phone_number ?? '',
+                    $r ? $r->status : 'Not Marked',
+                    $r ? ($r->check_in_time  ?? '') : '',
+                    $r ? ($r->check_out_time ?? '') : '',
+                    '"'.str_replace('"', '""', $r?->notes ?? '').'"',
                 ]);
             }
-            
-            // Generate filename
-            $className = preg_replace('/[^a-zA-Z0-9]/', '_', $class->name);
-            $dateStr = date('Y-m-d', strtotime($this->selectedDate));
-            $filename = "attendance_{$className}_{$dateStr}.csv";
-            
-            // Create CSV content
-            $csvContent = implode("\n", $csvLines);
-            
-            // Store CSV in session for download
-            session(['export_data' => $csvContent, 'export_filename' => $filename]);
-            
-            // Redirect to download route
+
+            $filename = 'attendance_'.preg_replace('/[^a-zA-Z0-9]/', '_', $class->name).'_'.date('Y-m-d', strtotime($this->selectedDate)).'.csv';
+            session(['export_data' => implode("\n", $rows), 'export_filename' => $filename]);
+
             return redirect()->route('teacher.download.export');
-            
+
         } catch (\Exception $e) {
-            $this->dispatch('notify', ['message' => 'Export failed: ' . $e->getMessage(), 'type' => 'error']);
+            $this->dispatch('notify', ['message' => 'Export failed: '.$e->getMessage(), 'type' => 'error']);
         }
     }
 
-    public function getStatistics()
+    // ── Computed ─────────────────────────────────────────────────────────────────
+
+    public function getStatistics(): array
     {
-        $teacher = Auth::guard('teacher')->user();
-        
-        $today = now()->format('Y-m-d');
-        $todayStats = AttendanceRecord::where('teacher_id', $teacher->id)
-            ->where('attendance_date', $today)
+        $stats = AttendanceRecord::where('teacher_id', Auth::guard('teacher')->id())
+            ->where('attendance_date', now()->format('Y-m-d'))
             ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
 
         return [
-            'present' => $todayStats['present'] ?? 0,
-            'absent' => $todayStats['absent'] ?? 0,
-            'late' => $todayStats['late'] ?? 0,
-            'excused' => $todayStats['excused'] ?? 0,
+            'present' => $stats['present'] ?? 0,
+            'absent'  => $stats['absent']  ?? 0,
+            'late'    => $stats['late']    ?? 0,
+            'excused' => $stats['excused'] ?? 0,
         ];
     }
 }

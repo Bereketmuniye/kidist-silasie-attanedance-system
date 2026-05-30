@@ -5,13 +5,13 @@ use App\Http\Controllers\Auth\TeacherLoginController;
 use App\Http\Controllers\Auth\TeacherRegisterController;
 use App\Http\Controllers\Auth\StudentRegistrationController;
 use App\Http\Controllers\ExportController;
-use App\Livewire\TeacherDashboard;
 use App\Livewire\StudentManagement;
 use App\Livewire\ClassManagement;
 use App\Livewire\AttendanceReports;
 use App\Livewire\ExamManagement;
 use App\Livewire\UserExam;
 use App\Livewire\ExamResultsManagement;
+use App\Http\Controllers\DashboardController;
 
 // Guest routes
 Route::get('/', function () {
@@ -31,6 +31,7 @@ Route::prefix('teacher')->name('teacher.')->group(function () {
     
     Route::post('logout', [TeacherLoginController::class, 'logout'])->name('logout');
 });
+
 
 // Student registration routes (public access)
 Route::prefix('student')->name('student.')->group(function () {
@@ -52,7 +53,7 @@ Route::prefix('exams')->name('exams.')->group(function () {
 
 // Protected teacher routes
 Route::middleware('auth:teacher')->prefix('teacher')->name('teacher.')->group(function () {
-    Route::get('/dashboard', TeacherDashboard::class)->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/students', StudentManagement::class)->name('students');
     Route::get('/classes', ClassManagement::class)->name('classes');
     Route::get('/reports', AttendanceReports::class)->name('reports');
